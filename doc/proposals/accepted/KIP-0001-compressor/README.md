@@ -1,6 +1,6 @@
 # KIP-0001: KCP LLM-Assisted Text Compressor
 
-Status: Drafted  
+Status: Accepted  
 Date: 2026-05-07  
 Owner: Yauhen Yakimovich
 
@@ -13,9 +13,11 @@ coding.
 The tool must support two execution modes:
 
 1. `mem`: run a local model loaded in memory as a binary, similar to NNCP v2
-	flow (see [doc/compressor/nncp.md](../../../../compressor/nncp.md)).
+	flow (see [doc/compressor/nncp.md](../../../compressor/nncp.md)).
 2. `api`: query an LLM API (local or remote, for example Ollama local server,
 	OpenAI-compatible endpoints, or similar) to obtain logits/probabilities.
+
+Implementation documentation: [doc/compressor/kcp.md](../../../compressor/kcp.md).
 
 In all other respects (model-driven probability estimation, deterministic
 encode/decode flow, range coding behavior, and stream format discipline), NNCP

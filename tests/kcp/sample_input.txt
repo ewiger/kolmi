@@ -1,0 +1,3 @@
+This is a sample input file for KCP testing.
+It contains multiple lines of text to simulate a realistic input.
+The purpose of this file is to serve as a test case for the KCP compressor.
