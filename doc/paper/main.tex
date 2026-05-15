@@ -1,0 +1,73 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage[hidelinks]{hyperref}
+
+\title{Making sense of LLM outputs}
+\author{Yauhen Yakimovich \\
+  \texttt{yauhen.yakimovich.mail@gmail.com}}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Large language models generate fluent outputs, but understanding quality,
+reliability, and uncertainty remains difficult. This paper presents a simple
+framework for analyzing LLM outputs using semantic consistency,
+calibration-oriented confidence proxies, and task-grounded error taxonomies.
+\end{abstract}
+
+\section{Introduction}
+Modern LLMs can solve a broad range of tasks, but evaluation is often reduced
+to aggregate benchmark scores. In many practical settings, users need to know
+\emph{why} a response appears correct, \emph{when} it fails, and \emph{how}
+confident they should be in it.
+
+This paper studies methods for making LLM outputs more interpretable and
+trustworthy. We focus on lightweight, model-agnostic analyses that can be
+applied post hoc to generated text.
+
+\section{Related Work}
+Prior work has examined hallucination detection, calibration, and response
+ranking by surrogate objectives~\cite{ranking_llms_by_compression_2024}. We build on this literature and emphasize
+practical diagnostics that are easy to implement and compare.
+
+\section{Method}
+Let $x$ be an input prompt and $y$ be a generated response. We define a
+composite diagnostic score:
+\begin{equation}
+S(x, y) = \alpha C_{\text{sem}}(x, y) + \beta C_{\text{self}}(y) - \gamma E(y),
+\end{equation}
+where $C_{\text{sem}}$ is semantic alignment to the task intent,
+$C_{\text{self}}$ measures self-consistency across sampled variants, and
+$E$ is a structured error penalty.
+
+\section{Experiments}
+We evaluate on representative QA and summarization tasks. For each task, we
+report:
+\begin{itemize}
+    \item exact-match or task-specific quality,
+    \item consistency across sampling runs,
+    \item human-labeled error categories.
+\end{itemize}
+
+\section{Results and Discussion}
+Preliminary findings suggest that combining consistency and error taxonomies
+improves detection of brittle outputs compared with single-score evaluation.
+
+\section{Conclusion}
+A structured view of LLM outputs can complement benchmark-centric evaluation
+and help practitioners reason about model behavior in deployment contexts.
+
+\bibliographystyle{plain}
+\bibliography{references}
+
+\end{document}
