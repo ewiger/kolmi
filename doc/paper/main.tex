@@ -10,7 +10,7 @@
 \usepackage{graphicx}
 \usepackage[hidelinks]{hyperref}
 
-\title{Semantic Compression in Language Models: Universal Coherence and Utility-Indexed Directions}
+\title{Making Sense of LLM Outputs}
 \author{Yauhen Yakimovich \\
   \texttt{yauhen.yakimovich.mail@gmail.com}}
 \date{\today}
@@ -19,11 +19,12 @@
 \maketitle
 
 \begin{abstract}
-We propose a dual-layer framework for semantic compression in language models.
-The universal layer identifies an entropy sweet spot where text is semantically coherent and meaningfully compressible—not tautological (low entropy) nor incoherent (high entropy).
-The utility-indexed layer shows that compression is fundamentally a family of instruction-conditioned projectors, each inducing a utility-relative quotient and equivalence class over language space.
-We define utility-aware distances using Normalized Compression Distance (NCD) and Normalized Information Distance (NID), formalize a partial order over compatible utilities via refinement, and propose empirical quality criteria separating compression distortion, context distortion, and interaction residuals.
-The result is not a single semantic hierarchy but a typed partial order of semantic quotients indexed by preservation utility.
+This paper develops a model-relative framework for semantic invariance in language.
+Starting from Algorithmic Information Theory, we connect Normalized Information Distance and Normalized Compression Distance to modern neural entropy coding, where a language model $M$ induces compressed representations $z_M(x)$ through probability-driven arithmetic coding.
+We then distinguish two layers: entropy compression, which preserves the exact sequence while reducing coding redundancy, and semantic compression, which transforms the sequence while attempting to preserve selected semantic properties.
+Semantics is treated operationally through behavioral invariance: if model behavior remains sufficiently stable under transformation, the transformation is meaning-preserving relative to the model.
+To capture task dependence, we introduce a family of semantic utilities, each inducing its own transformation operator, equivalence relation, and quotient space; repeated application can approximately stabilize, yielding projection-like structure.
+Under this view, abstraction emerges as convergence toward shared semantic kernels, and meaning is characterized not by a single universal hierarchy but by utility-conditioned geometric organization.
 \end{abstract}
 
 \input{intro.tex}
