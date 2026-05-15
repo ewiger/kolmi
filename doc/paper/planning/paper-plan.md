@@ -52,10 +52,10 @@ Semantic compression has two levels: (1) a universal layer where text has an ent
 
 8. Quality of Semantic Compression
    - Define distortion decomposition for model outputs under compression and context changes:
-     - Δ_k(x,C): compression perturbation
-     - Γ(x,C,C'): context perturbation
-     - J_k(x,C,C'): joint perturbation
-     - R_k(x,C,C'): interaction residual
+     - Δ: compression perturbation
+     - Γ: context perturbation
+     - J: joint perturbation
+     - R: interaction residual
    - Define objective S(k) balancing compression ratio, distortion, and residual.
    - Frame as heuristic regularity criterion, not strict axiom.
 

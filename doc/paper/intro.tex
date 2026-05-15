@@ -1,0 +1,74 @@
+\section{Introduction}
+
+Large Language Models (LLMs) generate text that is often remarkably coherent, useful, and semantically rich. Yet despite their practical success, there is still no widely accepted formal framework for reasoning about semantic preservation, abstraction, or equivalence in model-generated language. Current evaluation methods typically rely on benchmark performance, token-level likelihoods, embedding similarity, or human judgment. These approaches provide useful signals, but they do not directly explain what it means for two pieces of text to ``carry the same meaning'' relative to a model.
+
+This paper explores a different perspective: semantics as a form of functional invariance under compression.
+
+Our starting point is rooted in Algorithmic Information Theory (AIT), particularly the ideas of Kolmogorov complexity, Normalized Information Distance (NID), and its practical approximation through Normalized Compression Distance (NCD) \cite{li2004similarity,cilibrasi2005clustering}. Traditionally, these concepts measure similarity between objects through compressibility. Two objects are considered close if one can be efficiently described using information contained in the other.
+
+However, classical compressors such as gzip or LZ-based schemes capture mostly syntactic and statistical redundancy. They are not designed to preserve semantic structure. Recent developments in learned compression systems and LLM-based probabilistic modeling suggest a new possibility: compression may itself become semantically aware.
+
+This motivates the central idea of this paper:
+rather than defining semantics externally, we study semantics through the behavior of a fixed language model under transformations of its inputs.
+
+Let \(M\) denote a language model and let \(x\) be a prompt or text sequence. We introduce semantic compression operators
+\[
+k : X \to X
+\]
+that transform text into shorter or structurally simpler representations while attempting to preserve selected semantic properties. A simple motivating example is ``caveman compression'', where grammatical structure and linguistic redundancy are aggressively removed:
+\[
+\texttt{``The quick brown fox jumps over the lazy dog''}
+\;\mapsto\;
+\texttt{``fox jump dog''}.
+\]
+
+The key observation is that semantic preservation should not be judged solely by textual similarity, but by model-relative behavioral invariance. Informally, if a model behaves similarly on both \(x\) and \(k(x)\), then the compression preserves semantics relative to that model.
+
+This leads naturally to tolerance-based semantic equivalence relations of the form
+\[
+x \sim_\tau k(x),
+\]
+where equivalence is defined through bounded output divergence under a chosen model and context.
+
+Repeated application of semantic compression operators often reveals another important phenomenon: stabilization. After multiple iterations, text may collapse toward compact conceptual residues that no longer change significantly under further compression. These stable structures behave similarly to semantic fixed points or kernels:
+\[
+k(k(x)) \approx k(x).
+\]
+
+Rather than viewing this merely as lossy summarization, we interpret it as movement toward abstract conceptual domains. Different texts may converge toward shared semantic kernels corresponding to higher-level abstractions.
+
+Importantly, this paper does not treat semantic compression as a single operation. Instead, we introduce an abstract family of semantic preservation utilities
+\[
+\mathcal{U} = \{u_1,u_2,\dots\},
+\]
+where each utility defines which aspects of meaning should remain invariant and which distinctions may be discarded.
+
+For each utility \(u \in \mathcal{U}\), we associate a semantic compression operator
+\[
+f_u : X \to X
+\]
+and an induced equivalence relation
+\[
+x \sim_u y.
+\]
+
+This implies that language does not admit a single universal semantic quotient structure. Instead, each utility induces its own quotient space
+\[
+X / {\sim_u},
+\]
+corresponding to different notions of semantic preservation, including:
+\begin{itemize}
+    \item summarization,
+    \item legal-risk preservation,
+    \item emotional-tone preservation,
+    \item causal preservation,
+    \item code preservation,
+    \item safety preservation,
+    \item instruction preservation.
+\end{itemize}
+
+Utilities themselves may also possess internal structure. Some utilities preserve strictly more distinctions than others, inducing partial orders between semantic objectives. Other utilities appear approximately orthogonal, preserving largely independent semantic dimensions. This suggests a richer geometric interpretation of semantic preservation spaces, where utilities may behave similarly to projection operators over latent semantic manifolds.
+
+Under this view, semantic compression becomes more than a practical engineering technique. It becomes a tool for probing how language models internally organize abstraction, invariance, and conceptual structure.
+
+The goal of this paper is therefore not to propose a single compression algorithm, but to develop a mathematical and conceptual framework for studying semantic invariance under utility-conditioned transformations of language. We combine ideas from Algorithmic Information Theory, learned compression, quotient structures, functional invariance, and abstraction geometry to investigate how meaning may emerge, stabilize, and transform within LLM-generated text.

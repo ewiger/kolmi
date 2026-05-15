@@ -1,10 +1,18 @@
 
 # Theoretical framework
 
+## Part 0: Narrative Alignment (story.md -> TODO)
+
+- [ ] Lock paper arc to three layers in this order: (I) NID/NCD and LLM-relative semantics, (II) semantic compression and stable kernels, (III) abstraction geometry via partial order.
+- [ ] Explicitly state transition in intro: classical compressors capture statistical redundancy, while LLM-based compressors may preserve latent semantic structure.
+- [ ] Add explicit bridge question early: "How much semantic information survives under learned semantic compression?"
+- [ ] Position utility-indexed analysis as an extension layer after the core three-layer arc, not as the opening framing.
+- [ ] Ensure final synthesis section closes the loop from information-theoretic similarity to model-relative semantic geometry.
+
 ## Part 1: Theoretical framework for understanding the relationship between text entropy, semantic coherence, and model compression.
 
 - [ ] NCD as approximation to NID but using LLM-based compressors (see kcp.py or think nncp by F. Bellard).
-- [ ] Make a conclusion or observation (still a hypothesis) that low entropy of text per model M indicates high semantical coherence of text in a certain range.. when the entropy is to low the text is highly compressed and repetitive, and thus tautological. However, when tokens are meaningfully predicted by the model then there is a "golden middle" for text to be semantically rich and compressed. however as text becomes highly random and uncompressible, then it is also semantically incoherent. Thus, there is a "sweet spot" for text to be semantically rich and compressed, which can be measured by the entropy of the text per model M.
+- [ ] Make a conclusion or observation (still a hypothesis) that low entropy of text per model M indicates high semantical coherence of text in a certain range.. when the entropy is to low the text is highly compressed and repetitive, and thus tautological. However, when tokens are meaningfully predicted by the model then there is a "golden middle" for text to be semantically rich and compressed. however as text becomes highly random and incompressible, then it is also semantically incoherent. Thus, there is a "sweet spot" for text to be semantically rich and compressed, which can be measured by the entropy of the text per model M.
 - [ ] Formalize entropy sweet spot: define lower bound (tautology threshold) and upper bound (incoherence threshold) in terms of entropy percentiles or model-specific calibration.
 - [ ] Connect entropy sweet spot to idempotence: text in sweet spot should exhibit stable semantic projections.
 - [ ] Validate sweet spot hypothesis on diverse text corpora (Wikipedia, arXiv, legal, code).
@@ -41,6 +49,18 @@ Caveman compression is evaluated via a rectangular (2×2) functional behavior te
   - R_k ≤ 0: compression effects are subadditive (stable or better than expected).
   - R_k > 0: joint compression introduces extra semantic drift (non-linear interaction).
 - [ ] Establish rule-of-thumb: E[R_k^+] ≈ 0 or Q_{0.95}(R_k^+) ≤ ε, where R_k^+ = max(0, R_k).
+
+## Part 3.5: Semantic Kernels, Compression Trajectories, and Abstraction Geometry
+
+- [ ] Define iterative compression trajectory for text: x, k(x), k^2(x), k^3(x), ... and formal stopping criteria.
+- [ ] Define semantic kernel as a stable attractor / idempotent residue under repeated compression.
+- [ ] Quantify kernel convergence speed and stability bands under τ tolerance.
+- [ ] Measure when different source texts collapse into the same or nearby kernels (kernel basin analysis).
+- [ ] Separate and compare two evaluation views: reconstruction fidelity vs behavioral invariance under model M.
+- [ ] Define semantic refinement order over expressions/kernels (concept-level), distinct from utility-order over U.
+- [ ] Formalize incomparability conditions in the semantic order and provide examples from unrelated domains.
+- [ ] Connect directional interpretation: compression as movement toward abstraction; generation as movement toward elaboration.
+- [ ] Add diagnostics/visualization for abstraction geometry (trajectory plots, kernel clusters, poset diagrams).
 
 ## Part 4: Quality Metrics for Caveman Compression
 
