@@ -40,10 +40,10 @@ possibly reducing linguistic detail, grammatical structure, or contextual specif
 
 Recent experimental prompt-compression heuristics such as the ``caveman'' style \cite{brussee2026caveman} suggest that large reductions in token count may still preserve substantial model-relevant semantic structure. The ``caveman'' approach, implemented as open-source software, aggressively removes linguistic redundancy and conversational filler while attempting to preserve technical intent and functional meaning. This grounds the abstract theory in a culturally recognizable example that motivated the present work.
 
-Thus, NNCP-style neural compression and semantic compression operate at two different conceptual layers:
+We therefore distinguish two fundamentally different notions of compression:
 \begin{itemize}
-    \item \textit{entropy compression} reduces information-theoretic coding redundancy while preserving the exact sequence,
-    \item \textit{semantic compression} reduces semantic or linguistic redundancy while preserving selected model-relative invariants.
+    \item \textit{entropy compression}, which preserves the exact sequence while reducing coding redundancy,
+    \item \textit{semantic compression}, which transforms the sequence itself while attempting to preserve selected semantic invariants.
 \end{itemize}
 
 The interaction between these two notions of compression forms one of the central themes of this work.
@@ -51,7 +51,7 @@ The interaction between these two notions of compression forms one of the centra
 This motivates the central idea of this paper:
 rather than defining semantics externally, we study semantics through the behavior of a fixed language model under transformations of its inputs.
 
-Let \(M\) denote a language model and let \(x\) be a prompt or text sequence. We introduce semantic compression operators
+With \(M\) and \(x\) fixed, we now introduce semantic compression operators
 \[
 k : X \to X
 \]
