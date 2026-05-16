@@ -1,15 +1,13 @@
-\section{Sematic Compression}
 
-\subsection{Two Compression Layers}
-Let $X$ be a space of token sequences and let $M$ be a probabilistic language model.
-We distinguish two formally different operators:
+\section{Semantic Compression}
+
+\subsection{Entropy Compression vs Semantic Compression}
+Let $X$ be a space of token sequences and $M$ a probabilistic language model. We distinguish two operators:
 \begin{align*}
 \text{entropy compression:} \quad &x \mapsto z_M(x), \\
-\text{semantic compression:} \quad &x \mapsto f_u(x), \quad u \in \mathcal{U}.
+\text{semantic compression:} \quad &x \mapsto k(x).
 \end{align*}
-Here $z_M(x)$ is a lossless binary code produced by entropy coding driven by model probabilities, while $f_u$ is a lossy text-to-text transformation intended to preserve utility-specific semantic invariants.
-
-Define model code length
+Here $z_M(x)$ is a lossless binary code produced by entropy coding driven by model probabilities. Define model code length
 \[
 C_M(x) := |z_M(x)|,
 \]
@@ -21,7 +19,7 @@ and per-token model-relative cross-entropy estimate
 \[
 h_M(x) := \frac{|z_M(x)|}{|x|_{\mathrm{tok}}}.
 \]
-LLM code length is therefore a model-relative predictability signal, not a direct semantic observable. This separates coding efficiency ($C_M$, $e$, or $h_M$) from semantic invariance (stability of model behavior under $f_u$).
+LLM code length is a model-relative predictability signal, not a direct semantic observable. Coding efficiency ($C_M$, $e$, or $h_M$) is distinct from semantic invariance.
 
 \subsection{Kolmogorov Complexity, Shannon Entropy, and Code-Length Rate}
 These quantities are related but not identical.
@@ -95,36 +93,76 @@ Accordingly, compression distances are diagnostic rather than definitive. We use
 \]
 and interpret them together with behavioral criteria.
 
-\subsection{Open Hypotheses and Approach}
-The open points in the entropy-vs-comprehension theme can be expressed as testable hypotheses.
+\subsection{Limits of Compression-Only Semantics}
 
-Hypothesis H1 (model-relative predictability regime): for each model $M$ and utility/domain setting, there exist calibrated thresholds
+Compression metrics such as $h_M(x)$, $\Delta_M(x)$, and $\mathrm{NCD}_{C_M^*}$ are useful diagnostics, but they do not define semantics. Low entropy does not guarantee semantic richness, and high entropy does not necessarily imply incoherence\footnote{High entropy may reflect semantic richness, noise, or unpredictability for other reasons; it is not a direct indicator of incoherence.}. Boilerplate, repetition, tautologies, domain familiarity, and even predictable nonsense can all yield low code lengths without semantic depth. Thus, compression alone cannot define semantics.
+
+This motivates the need for behavioral semantic criteria: we must look beyond code length and compression distance to the actual behavior of the model on transformed inputs.
+
+\subsection{Behavioral Semantic Preservation}
+We now introduce the semantic compression operator
 \[
-\tau_{\mathrm{low}}(M) < \tau_{\mathrm{high}}(M)
+k : X \to X
 \]
-such that texts with $h_M(x) \in [\tau_{\mathrm{low}},\tau_{\mathrm{high}}]$ are more likely to preserve utility-conditioned semantics than texts outside this range. These thresholds describe predictability under $M$, not universal semantic quality.
-
-Hypothesis H2 (idempotence link): for a fixed utility operator $f_u$, semantic stabilization
+which transforms text into a shorter or structurally simpler representation while attempting to preserve meaning. A motivating example is ``caveman compression,'' where grammatical structure and redundancy are aggressively removed:
 \[
-f_u(f_u(x)) \approx f_u(x)
+\texttt{"The quick brown fox jumps over the lazy dog"}
+\;\mapsto\;
+\texttt{"fox jump dog"}.
 \]
-is strongest in calibrated predictability regimes, and can weaken outside them.
 
-Behavioral semantic criterion (primary):
+Semantic preservation is defined behaviorally: if a model behaves similarly\footnote{judging by the output similarity} on both $x$ and $k(x)$, then the compression preserves semantics relative to that model. Formally, for a model $M$ and context $c$,
 \[
 f_M(x\mid c) \approx f_M(k(x)\mid c),
 \]
-where $f_M(\cdot\mid c)$ denotes model behavior under context $c$. Compression-based metrics are secondary evidence relative to this behavioral test.
+where $f_M(\cdot\mid c)$ denotes model behavior under context $c$.
 
-Operational approach:
+Repeated application of $k$ may reveal stabilization:
+\[
+k(k(x)) \approx k(x).
+\]
+This suggests a dynamical interpretation: repeated semantic compression can drive texts toward approximately invariant semantic regions.
+
+To make this precise, let $d_M$ be a model-relative behavioral distance and let $\varepsilon > 0$. We define the approximate semantic kernel of $k$ (relative to $M$) as
+\[
+K_{k,M}^{(\varepsilon)} := \{x \in X : d_M(k(x),x) \le \varepsilon\}.
+\]
+Elements of $K_{k,M}^{(\varepsilon)}$ are approximately stable under semantic compression. A stronger set-level form is approximate invariance:
+\[
+k\big(K_{k,M}^{(\varepsilon)}\big) \subseteq K_{k,M}^{(\varepsilon')} 
+\quad \text{for small } \varepsilon' \text{ (typically } \varepsilon' \approx \varepsilon\text{)}.
+\]
+Under this view, abstraction is interpreted as convergence of trajectories $x_{t+1}=k(x_t)$ toward these approximately invariant kernel regions, rather than exact fixed points.
+
+\subsection{Open Hypotheses and Approach}
+We now state open hypotheses, focusing on model-relative predictability and semantic stabilization, without invoking utilities prematurely.
+
+\textbf{Hypothesis H1 (model-relative predictability regime):} For each model $M$, there exist calibrated thresholds
+\[
+\tau_{\mathrm{low}}(M) < \tau_{\mathrm{high}}(M)
+\]
+such that texts with $h_M(x) \in [\tau_{\mathrm{low}},\tau_{\mathrm{high}}]$ are more likely to preserve semantics (as measured by behavioral invariance) than texts outside this range. These thresholds describe predictability under $M$, not universal semantic quality.
+
+\textbf{Tau-equivalence:} We say $x \sim_{\tau, M} k(x)$ if $h_M(x)$ lies within the calibrated regime and $f_M(x\mid c) \approx f_M(k(x)\mid c)$ for relevant contexts $c$.
+
+Compression-based metrics such as $\mathrm{NCD}_{C_M^*}$ are auxiliary evidence, not primary semantic definitions.
+
+\textbf{Operational approach:}
 \begin{enumerate}
   \item Calibrate $\tau_{\mathrm{low}},\tau_{\mathrm{high}}$ from empirical percentiles of $h_M$ on mixed corpora.
   \item Measure $\Delta_M(x)=e(x)-|z_M(x)|$ to estimate model predictive advantage beyond generic compression.
-  \item Measure $\mathrm{NCD}_{C_M^*}(x,f_u(x))$ and task-level output divergence as complementary semantic-preservation signals.
+  \item Measure $\mathrm{NCD}_{C_M^*}(x,k(x))$ and task-level output divergence as complementary semantic-preservation signals.
   \item Quantify stabilization by an idempotence residual such as
   \[
-  r_u(x) := d_M\big(f_u(x), f_u(f_u(x))\big),
+  r(x) := d_M\big(k(x), k(k(x))\big),
   \]
   where $d_M$ is a model-relative behavioral distance.
   \item Validate across diverse domains (encyclopedic text, scientific text, legal text, multilingual text, and code) to test cross-domain robustness.
 \end{enumerate}
+
+% --- Placeholders for further subsections ---
+\subsection{Semantic Utilities and Utility-Conditioned Semantics (to be developed)}
+% This section will introduce utility families as refinements of behavioral invariance, following the narrative order in intro.tex.
+
+\subsection{Caveman Compression Example (to be developed)}
+% This section will expand on the caveman example, closely following the style and clarity of intro.tex.
