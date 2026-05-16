@@ -111,15 +111,27 @@ which transforms text into a shorter or structurally simpler representation whil
 \texttt{"fox jump dog"}.
 \]
 
-Semantic preservation is defined behaviorally: if a model behaves similarly\footnote{judging by the output similarity} on both $x$ and $k(x)$, then the compression preserves semantics relative to that model. Formally, for a model $M$ and context $c$,
+Semantic preservation is defined behaviorally: if a model behaves similarly\footnote{Judging by the output similarity} on both $x$ and $k(x)$, then the compression preserves semantics relative to that model. Formally, fix a model $M$ and treat any evaluation context as implicit in $x$ itself. Let $f_M(x)$ denote model behavior on input $x$, and let $d_M$ be a behavioral distance on such outputs. We then define exact behavioral equivalence by
 \[
-f_M(x\mid c) \approx f_M(k(x)\mid c),
+x \sim_M y
+\quad \Longleftrightarrow \quad
+d_M\big(f_M(x), f_M(y)\big) = 0.
 \]
-where $f_M(\cdot\mid c)$ denotes model behavior under context $c$.
+Since exact equality is usually too rigid in practice, we use the relaxed relation
+\[
+x \approx_M^{(\varepsilon)} y
+\quad \Longleftrightarrow \quad
+d_M\big(f_M(x), f_M(y)\big) \le \varepsilon,
+\]
+for a chosen tolerance $\varepsilon > 0$. Semantic preservation under compression is then the statement
+\[
+x \approx_M^{(\varepsilon)} k(x)
+\]
+for the relevant evaluations.
 
 Repeated application of $k$ may reveal stabilization:
 \[
-k(k(x)) \approx k(x).
+d_M\big(k(k(x)), k(x)\big) \le \varepsilon_{\mathrm{stab}}.
 \]
 This suggests a dynamical interpretation: repeated semantic compression can drive texts toward approximately invariant semantic regions.
 
@@ -143,7 +155,11 @@ We now state open hypotheses, focusing on model-relative predictability and sema
 \]
 such that texts with $h_M(x) \in [\tau_{\mathrm{low}},\tau_{\mathrm{high}}]$ are more likely to preserve semantics (as measured by behavioral invariance) than texts outside this range. These thresholds describe predictability under $M$, not universal semantic quality.
 
-\textbf{Tau-equivalence:} We say $x \sim_{\tau, M} k(x)$ if $h_M(x)$ lies within the calibrated regime and $f_M(x\mid c) \approx f_M(k(x)\mid c)$ for relevant contexts $c$.
+\textbf{Tau-filtered preservation:} We say $x \sim_{\tau, M}^{(\varepsilon)} k(x)$ if $h_M(x)$ lies within the calibrated regime and
+\[
+x \approx_M^{(\varepsilon)} k(x)
+\]
+for the relevant evaluations.
 
 Compression-based metrics such as $\mathrm{NCD}_{C_M^*}$ are auxiliary evidence, not primary semantic definitions.
 
