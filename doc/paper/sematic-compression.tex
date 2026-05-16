@@ -1,0 +1,130 @@
+\section{Sematic Compression}
+
+\subsection{Two Compression Layers}
+Let $X$ be a space of token sequences and let $M$ be a probabilistic language model.
+We distinguish two formally different operators:
+\begin{align*}
+\text{entropy compression:} \quad &x \mapsto z_M(x), \\
+\text{semantic compression:} \quad &x \mapsto f_u(x), \quad u \in \mathcal{U}.
+\end{align*}
+Here $z_M(x)$ is a lossless binary code produced by entropy coding driven by model probabilities, while $f_u$ is a lossy text-to-text transformation intended to preserve utility-specific semantic invariants.
+
+Define model code length
+\[
+C_M(x) := |z_M(x)|,
+\]
+and a strong generic entropy-compressor baseline
+\[
+e(x),
+\]
+and per-token model-relative cross-entropy estimate
+\[
+h_M(x) := \frac{|z_M(x)|}{|x|_{\mathrm{tok}}}.
+\]
+LLM code length is therefore a model-relative predictability signal, not a direct semantic observable. This separates coding efficiency ($C_M$, $e$, or $h_M$) from semantic invariance (stability of model behavior under $f_u$).
+
+\subsection{Kolmogorov Complexity, Shannon Entropy, and Code-Length Rate}
+These quantities are related but not identical.
+
+For a random variable $X$ with distribution $p$, Shannon entropy is
+\[
+H(X) = -\sum_x p(x)\log_2 p(x).
+\]
+For autoregressive model probabilities $p_M(t_i\mid t_{<i})$, arithmetic coding yields code length approximately
+\[
+|z_M(x)| \approx -\sum_{i=1}^{n} \log_2 p_M(t_i\mid t_{<i}).
+\]
+Hence
+\[
+h_M(x) = \frac{|z_M(x)|}{|x|_{\mathrm{tok}}}
+\approx
+\frac{1}{n}\sum_{i=1}^{n} -\log_2 p_M(t_i\mid t_{<i}),
+\]
+which is an empirical model-relative cross-entropy rate (bits per token).
+
+If $M$ matches the true source distribution, this rate approaches Shannon entropy rate; otherwise it is cross-entropy rate under model mismatch.
+
+Kolmogorov complexity $K(x)$ is algorithmic (shortest program length) rather than probabilistic. Practical code lengths such as $|z_M(x)|$ and $e(x)$ are computable proxies for compressibility and may approximate $K(x)$ only asymptotically and model-relatively.
+
+\subsection{NID and NCD}
+For finite strings $x,y$, let $K(\cdot)$ denote prefix Kolmogorov complexity and $K(\cdot\mid\cdot)$ conditional complexity. Information distance is
+\[
+E(x,y) := \max\{K(x\mid y), K(y\mid x)\}.
+\]
+The normalized information distance (NID) is
+\[
+\mathrm{NID}(x,y) := \frac{E(x,y)}{\max\{K(x),K(y)\}}.
+\]
+NID is universal but incomputable.
+
+Given a practical compressor $C$, normalized compression distance (NCD) is
+\[
+\mathrm{NCD}_C(x,y) :=
+\frac{C(xy)-\min\{C(x),C(y)\}}{\max\{C(x),C(y)\}},
+\]
+where $xy$ denotes a self-delimiting concatenation.
+Under standard normal-compressor assumptions, $\mathrm{NCD}_C$ approximates NID in practice.
+
+In the NNCP-style setting, we instantiate
+\[
+C \equiv C_M, \quad C_M(x)=|z_M(x)|,
+\]
+which yields a model-relative distance
+\[
+\mathrm{NCD}_M(x,y) :=
+\frac{|z_M(xy)|-\min\{|z_M(x)|,|z_M(y)|\}}{\max\{|z_M(x)|,|z_M(y)|\}}.
+\]
+Crucially, $z_M(x)$ is not a semantic projection: it is a codeword in bit space. A model can compress well because of semantics, but also because of boilerplate, repetition, formatting regularity, or domain familiarity.
+
+To stabilize practical complexity estimates, we define a hybrid proxy
+\[
+C_M^*(x) := \min\{e(x),\,|z_M(x)|\}.
+\]
+This prevents a weak model predictor from degrading complexity estimates relative to a strong generic compressor and gives a more conservative practical proxy to Kolmogorov complexity.
+
+We also define semantic surplus
+\[
+\Delta_M(x) := e(x)-|z_M(x)|.
+\]
+Large positive $\Delta_M(x)$ means $M$ predicts $x$ better than generic entropy compression; small or negative $\Delta_M(x)$ means little model advantage. Even large $\Delta_M$ is semantic evidence, not semantic proof.
+
+Accordingly, compression distances are diagnostic rather than definitive. We use
+\[
+\mathrm{NCD}_{C_M^*}(x,y) :=
+\frac{C_M^*(xy)-\min\{C_M^*(x),C_M^*(y)\}}{\max\{C_M^*(x),C_M^*(y)\}},
+\]
+and interpret them together with behavioral criteria.
+
+\subsection{Open Hypotheses and Approach}
+The open points in the entropy-vs-comprehension theme can be expressed as testable hypotheses.
+
+Hypothesis H1 (model-relative predictability regime): for each model $M$ and utility/domain setting, there exist calibrated thresholds
+\[
+\tau_{\mathrm{low}}(M) < \tau_{\mathrm{high}}(M)
+\]
+such that texts with $h_M(x) \in [\tau_{\mathrm{low}},\tau_{\mathrm{high}}]$ are more likely to preserve utility-conditioned semantics than texts outside this range. These thresholds describe predictability under $M$, not universal semantic quality.
+
+Hypothesis H2 (idempotence link): for a fixed utility operator $f_u$, semantic stabilization
+\[
+f_u(f_u(x)) \approx f_u(x)
+\]
+is strongest in calibrated predictability regimes, and can weaken outside them.
+
+Behavioral semantic criterion (primary):
+\[
+f_M(x\mid c) \approx f_M(k(x)\mid c),
+\]
+where $f_M(\cdot\mid c)$ denotes model behavior under context $c$. Compression-based metrics are secondary evidence relative to this behavioral test.
+
+Operational approach:
+\begin{enumerate}
+  \item Calibrate $\tau_{\mathrm{low}},\tau_{\mathrm{high}}$ from empirical percentiles of $h_M$ on mixed corpora.
+  \item Measure $\Delta_M(x)=e(x)-|z_M(x)|$ to estimate model predictive advantage beyond generic compression.
+  \item Measure $\mathrm{NCD}_{C_M^*}(x,f_u(x))$ and task-level output divergence as complementary semantic-preservation signals.
+  \item Quantify stabilization by an idempotence residual such as
+  \[
+  r_u(x) := d_M\big(f_u(x), f_u(f_u(x))\big),
+  \]
+  where $d_M$ is a model-relative behavioral distance.
+  \item Validate across diverse domains (encyclopedic text, scientific text, legal text, multilingual text, and code) to test cross-domain robustness.
+\end{enumerate}
